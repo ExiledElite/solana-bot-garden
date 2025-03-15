@@ -12,10 +12,10 @@ const Index = () => {
   
   useEffect(() => {
     // Check if user is already logged in
-    const user = localStorage.getItem('user');
-    if (user) {
-      navigate('/dashboard');
-    }
+    // const user = localStorage.getItem('user');
+    // if (user) {
+    //   navigate('/dashboard');
+    // }
   }, [navigate]);
 
   const scrollToSection = (id: string) => {
