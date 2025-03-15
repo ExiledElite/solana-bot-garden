@@ -11,7 +11,7 @@ export const hasUserPaid = () => {
   return hasPaid;
 };
 
-// Check if the user is logged in
+// Check if the user is logged in testttt
 export const isUserLoggedIn = () => {
   return localStorage.getItem('user') !== null;
 };
