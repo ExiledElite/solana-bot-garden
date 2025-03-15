@@ -29,6 +29,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/payments" element={<Payments />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/volume-bot" element={<VolumeBot />} />
             <Route path="/snipe-bot" element={<SnipeBot />} />
@@ -36,7 +37,6 @@ const App = () => (
             <Route path="/coin-launch" element={<CoinLaunch />} />
             <Route path="/wallets" element={<Wallets />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/payments" element={<Payments />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

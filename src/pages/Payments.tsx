@@ -14,19 +14,8 @@ const Payments = () => {
   const [selectedPlan, setSelectedPlan] = useState('lifetime');
   
   useEffect(() => {
-    console.log('Payments page loaded');
-    
-    // Check if user is already logged in
-    if (!isUserLoggedIn()) {
-      console.log('User not logged in, redirecting to signup');
-      // If not logged in, navigate to signup first
-      navigate('/signup');
-      return;
-    }
-    
-    // If user has already paid, redirect to dashboard
+    // Check if user has already paid, redirect to dashboard
     if (hasUserPaid()) {
-      console.log('User has paid, redirecting to dashboard');
       navigate('/dashboard');
     }
   }, [navigate]);
@@ -47,8 +36,6 @@ const Payments = () => {
       };
       localStorage.setItem('user', JSON.stringify(user));
       
-      console.log('Payment successful, updating user data:', user);
-      
       toast({
         title: "Payment Successful",
         description: `Thank you for your purchase! Your ${selectedPlan} subscription is now active.`,
@@ -59,9 +46,7 @@ const Payments = () => {
   };
 
   const returnToHome = () => {
-    console.log('Returning to home');
-    // Use the HTML5 history API directly to force a full navigation
-    window.location.href = '/';
+    navigate('/', { replace: true });
   };
 
   return (
