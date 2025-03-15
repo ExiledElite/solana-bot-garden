@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
@@ -7,12 +6,33 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { Crosshair, Play, Pause } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { Switch } from "@/components/ui/switch";
+
+interface SnipeBotFormValues {
+  devWalletAddress: string;
+  checkMaxMarketCap: boolean;
+  maxMarketCap: string;
+}
 
 const SnipeBots = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const navigate = useNavigate();
   const { isVisible, animationProps, staggeredAnimationProps } = usePageTransition();
+  
+  const form = useForm<SnipeBotFormValues>({
+    defaultValues: {
+      devWalletAddress: '',
+      checkMaxMarketCap: false,
+      maxMarketCap: '1000000',
+    }
+  });
+  
+  const watchCheckMaxMarketCap = form.watch("checkMaxMarketCap");
   
   useEffect(() => {
     const user = localStorage.getItem('user');
@@ -23,11 +43,43 @@ const SnipeBots = () => {
   }, [navigate]);
   
   const handleToggleBot = () => {
-    setIsActive(!isActive);
-    toast({
-      title: isActive ? "Bot Stopped" : "Bot Started",
-      description: `Snipe Bot has been ${isActive ? "deactivated" : "activated"}.`
-    });
+    const values = form.getValues();
+    
+    if (isActive) {
+      setIsActive(false);
+      toast({
+        title: "Bot Stopped",
+        description: "Snipe Bot has been deactivated."
+      });
+    } else {
+      if (!values.devWalletAddress.trim()) {
+        toast({
+          title: "Missing Information",
+          description: "Please enter a developer wallet address to snipe.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (values.checkMaxMarketCap) {
+        const maxMarketCap = parseFloat(values.maxMarketCap);
+        
+        if (isNaN(maxMarketCap) || maxMarketCap <= 0) {
+          toast({
+            title: "Invalid Maximum Market Cap",
+            description: "Please enter a valid maximum market cap value.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+      
+      setIsActive(true);
+      toast({
+        title: "Bot Started",
+        description: `Snipe Bot is now monitoring developer wallet: ${values.devWalletAddress.slice(0, 6)}...${values.devWalletAddress.slice(-4)}`
+      });
+    }
   };
 
   return (
@@ -62,7 +114,83 @@ const SnipeBots = () => {
           <div {...animationProps}>
             <Card className="border backdrop-blur-sm bg-black/30 glass-dark min-h-[400px]">
               <CardContent className="p-6">
-                {/* Empty frame for future content */}
+                <Form {...form}>
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="devWalletAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base font-medium">Snipe Dev Wallet</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Enter developer wallet address to snipe their new tokens" 
+                              className="bg-background/50 backdrop-blur-sm focus:ring-2 focus:ring-solana/50" 
+                              disabled={isActive}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Monitor this developer address and automatically snipe newly created tokens when they deploy on pump.fun
+                          </FormDescription>
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="space-y-4 pt-4">
+                      <FormField
+                        control={form.control}
+                        name="checkMaxMarketCap"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">
+                                Maximum Market Cap Threshold
+                              </FormLabel>
+                              <FormDescription>
+                                Only buy tokens below a specified market cap value
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={isActive}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      {watchCheckMaxMarketCap && (
+                        <div className="ml-10 space-y-4 pt-2">
+                          <FormField
+                            control={form.control}
+                            name="maxMarketCap"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Maximum Market Cap ($)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number" 
+                                    min="0"
+                                    placeholder="1000000" 
+                                    className="bg-background/50 backdrop-blur-sm focus:ring-2 focus:ring-solana/50" 
+                                    disabled={isActive}
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormDescription>
+                                  Maximum market cap threshold for tokens to snipe
+                                </FormDescription>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Form>
               </CardContent>
             </Card>
           </div>
