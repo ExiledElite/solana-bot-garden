@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -59,7 +60,8 @@ const Payments = () => {
 
   const returnToHome = () => {
     console.log('Returning to home');
-    navigate('/');
+    // Use the HTML5 history API directly to force a full navigation
+    window.location.href = '/';
   };
 
   return (
