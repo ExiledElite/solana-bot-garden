@@ -1,11 +1,9 @@
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { CheckIcon, ArrowRight, LockIcon } from "lucide-react";
-import { hasUserPaid, isUserLoggedIn } from '@/utils/auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Payments = () => {
@@ -13,13 +11,6 @@ const Payments = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('lifetime');
   
-  useEffect(() => {
-    // Check if user has already paid, redirect to dashboard
-    if (hasUserPaid()) {
-      navigate('/dashboard');
-    }
-  }, [navigate]);
-
   const handlePayment = () => {
     setIsProcessing(true);
     
@@ -41,7 +32,7 @@ const Payments = () => {
         description: `Thank you for your purchase! Your ${selectedPlan} subscription is now active.`,
       });
       
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     }, 1500);
   };
 

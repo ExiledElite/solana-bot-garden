@@ -6,9 +6,7 @@ export const hasUserPaid = (): boolean => {
     if (!userStr) return false;
     
     const user = JSON.parse(userStr);
-    
-    // Explicitly check for the existence of the subscription property and its active status
-    return user && user.subscription && user.subscription.active === true;
+    return Boolean(user.subscription?.active);
   } catch (error) {
     console.error('Error checking payment status:', error);
     return false;

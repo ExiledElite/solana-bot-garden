@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { hasUserPaid, isUserLoggedIn } from '@/utils/auth';
 
@@ -13,8 +13,12 @@ const PUBLIC_PATHS = ['/', '/signup', '/payments'];
 const PaywallRedirect = ({ children }: PaywallRedirectProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const hasRedirected = useRef(false);
   
   useEffect(() => {
+    // Only run this effect once per navigation
+    if (hasRedirected.current) return;
+    
     // Skip all checks for public paths
     if (PUBLIC_PATHS.includes(pathname)) {
       return;
@@ -22,17 +26,21 @@ const PaywallRedirect = ({ children }: PaywallRedirectProps) => {
     
     // If user is not logged in, redirect to home
     if (!isUserLoggedIn()) {
+      hasRedirected.current = true;
       navigate('/', { replace: true });
       return;
     }
     
     // If user is logged in but hasn't paid, redirect to payments
-    if (isUserLoggedIn() && !hasUserPaid()) {
+    if (!hasUserPaid()) {
+      hasRedirected.current = true;
       navigate('/payments', { replace: true });
       return;
     }
     
-    // If we reach here, user is logged in and has paid - no redirection needed
+    // Reset the redirect flag on successful navigation to a protected route
+    hasRedirected.current = false;
+    
   }, [navigate, pathname]);
   
   return <>{children}</>;
