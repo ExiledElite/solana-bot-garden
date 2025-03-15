@@ -10,7 +10,6 @@ interface PriceCardProps {
   title: string;
   description: string;
   features: string[];
-  period?: string;
   popular?: boolean;
   className?: string;
   redirectToPayments?: boolean;
@@ -21,7 +20,6 @@ const PriceCard = ({
   title,
   description,
   features,
-  period = "month",
   popular = false,
   className,
   redirectToPayments = false,
@@ -59,7 +57,7 @@ const PriceCard = ({
         <div className="flex items-end gap-1 mb-6">
           <span className="text-3xl font-bold">{price}</span>
           <span className="text-xl font-medium text-solana">SOL</span>
-          {period !== "one-time" && <span className="text-muted-foreground text-sm">/{period}</span>}
+          <span className="text-muted-foreground text-sm">/month</span>
         </div>
         
         <ul className="space-y-2 mb-8">
